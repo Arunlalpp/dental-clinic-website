@@ -1,0 +1,82 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --paper: #f3f2ed;
+  --ink: #0d1b24;
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    /* Lenis drives scroll; keep native smooth off to avoid double-easing. */
+    scroll-behavior: auto;
+  }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-body), system-ui, sans-serif;
+    /* Guard against any child causing sideways scroll on mobile. */
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3 {
+    font-family: var(--font-display), Georgia, serif;
+    text-wrap: balance;
+  }
+
+  /* Visible focus for keyboard users everywhere. */
+  :focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 3px;
+  }
+
+  ::selection {
+    background: #155e8c;
+    color: #fff;
+  }
+}
+
+@layer utilities {
+  /* Masks a line of text so its inner span can slide up from below. */
+  .reveal-line {
+    display: block;
+    overflow: hidden;
+  }
+  .reveal-line > * {
+    display: block;
+  }
+
+  /* Hide the native cursor only when the custom cursor is active (desktop). */
+  .cursor-none,
+  .cursor-none * {
+    cursor: none;
+  }
+}
+
+/* Lenis recommended styles */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* Respect the OS motion preference: neutralise transforms & long transitions. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
