@@ -12,13 +12,11 @@ import { gsap } from "gsap";
  * Fully disabled on touch devices and under reduced-motion — the native
  * cursor is untouched there.
  *
- * Both the dot and ring are white + `mix-blend-difference` (same trick as
- * the FullWidthImage statement heading) rather than a fixed `ink` color —
- * the cursor crosses light sections, dark sections, and now the full-bleed
- * hero video, and a fixed dark color disappears entirely over dark
- * backgrounds. Difference-blending white against the backdrop stays visible
- * everywhere automatically: it reads dark on light surfaces, light on dark
- * ones, with no per-section awareness needed.
+ * The dot and ring use the brand pink with a white halo (box-shadow) rather
+ * than `mix-blend-difference` — difference-blending white washed out to a
+ * barely-visible near-white smear over the site's light `paper`/`white`
+ * sections. A solid pink + white outline stays legible on every background,
+ * light or dark, without depending on blend-mode compositing.
  */
 export default function CustomCursor() {
   const dot = useRef<HTMLDivElement>(null);
@@ -86,14 +84,14 @@ export default function CustomCursor() {
     <div aria-hidden className="pointer-events-none fixed inset-0 z-[90]">
       <div
         ref={dot}
-        className="fixed left-0 top-0 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white mix-blend-difference"
+        className="fixed left-0 top-0 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-pink shadow-[0_0_0_2px_rgba(255,255,255,0.9)]"
       />
       <div
         ref={ring}
-        className={`fixed left-0 top-0 grid -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-white mix-blend-difference font-mono text-[0.6rem] uppercase tracking-widest text-white transition-[width,height,background-color] duration-300 ease-premium ${
+        className={`fixed left-0 top-0 grid -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border-2 border-pink bg-white/10 font-mono text-[0.6rem] uppercase tracking-widest text-pink shadow-[0_0_0_1.5px_rgba(255,255,255,0.9)] backdrop-blur-[2px] transition-[width,height,background-color] duration-300 ease-premium ${
           active
             ? label
-              ? "h-16 w-16 bg-white text-ink"
+              ? "h-16 w-16 bg-pink text-white"
               : "h-10 w-10"
             : "h-8 w-8"
         }`}

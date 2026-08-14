@@ -1,9 +1,10 @@
 /**
  * DOCTORS — real team, extracted from the live site (2026-08-14).
  * Qualifications and specialties are preserved verbatim; do not embellish.
- * `image` paths point at /public/doctors/* — drop real portraits there.
- * Until real portraits are supplied, `image` may be undefined and the UI
- * should fall back to an initials/monogram placeholder (never a stock face).
+ * `image` paths point at /public/doctors/* for real portraits, or
+ * /public/images/dental/* for the one approved generic stock placeholder
+ * (see `stockPlaceholder`). Until a doctor has either, the UI falls back to
+ * an initials/monogram card.
  */
 
 export interface Doctor {
@@ -13,7 +14,14 @@ export interface Doctor {
   role: string;               // e.g. "Chief Dental Surgeon"
   specialty?: string;         // short specialty tag for hover/overlay
   affiliation?: string;       // external hospital affiliation, if any
-  image?: string;             // /doctors/xxx.jpg  — real photo only
+  image?: string;             // real photo, or an approved stock placeholder
+  /**
+   * True if `image` is a generic AI-generated/stock photo standing in for
+   * this person, not an actual photo of them. Confirmed acceptable by the
+   * clinic (2026-08-14) as a temporary placeholder until real portraits are
+   * supplied. Swap to a real photo and drop this flag when available.
+   */
+  stockPlaceholder?: boolean;
 }
 
 export const doctors: Doctor[] = [
@@ -23,6 +31,8 @@ export const doctors: Doctor[] = [
     qualification: "BDS",
     role: "Chief Dental Surgeon",
     specialty: "General & Cosmetic Dentistry",
+    image: "/images/dental/21-doctor-headshot-stock.webp",
+    stockPlaceholder: true,
   },
   {
     id: "fahad-hamdan-kk",

@@ -1,11 +1,19 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
+import Image from "next/image";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { doctors } from "@/data/doctors";
 import RevealText from "@/components/ui/RevealText";
 import AmbientVideo from "@/components/ui/AmbientVideo";
 import { dentalAssets } from "@/data/dental-assets";
+import { useSlideUp } from "@/lib/animations/hooks";
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 /**
  * Doctor carousel. Native scroll-snap track (smooth on touch, no heavy carousel
@@ -28,6 +36,31 @@ function initials(name: string) {
 export default function Doctors() {
   const track = useRef<HTMLUListElement>(null);
   const [index, setIndex] = useState(0);
+  const controlsRef = useSlideUp<HTMLDivElement>({ y: 20, delay: 0.1 });
+
+  // Cards fade/rise in with a stagger as the carousel scrolls into view.
+  useEffect(() => {
+    const el = track.current;
+    if (!el) return;
+    const cards = el.querySelectorAll<HTMLElement>("[data-card]");
+    if (!cards.length) return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        cards,
+        reduce ? { opacity: 0 } : { opacity: 0, y: 48 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: reduce ? 0.4 : 0.9,
+          ease: "power3.out",
+          stagger: reduce ? 0 : 0.1,
+          scrollTrigger: { trigger: el, start: "top 85%", once: true },
+        }
+      );
+    }, el);
+    return () => ctx.revert();
+  }, []);
 
   // drag-to-scroll (desktop)
   useEffect(() => {
@@ -97,12 +130,12 @@ export default function Doctors() {
               className="font-display text-display-md uppercase text-ink"
             />
           </div>
-          <div className="flex items-center gap-3">
+          <div ref={controlsRef} className="flex items-center gap-3">
             <button
               type="button"
               onClick={() => scrollByCard(-1)}
               aria-label="Previous doctor"
-              className="grid h-12 w-12 place-items-center rounded-full border border-ink/20 text-ink transition-colors hover:bg-ink hover:text-white"
+              className="grid h-12 w-12 place-items-center rounded-full border border-ink/20 text-ink transition-all duration-300 ease-premium hover:scale-110 hover:border-pink hover:bg-pink hover:text-white"
             >
               <ArrowLeft size={18} />
             </button>
@@ -110,7 +143,7 @@ export default function Doctors() {
               type="button"
               onClick={() => scrollByCard(1)}
               aria-label="Next doctor"
-              className="grid h-12 w-12 place-items-center rounded-full border border-ink/20 text-ink transition-colors hover:bg-ink hover:text-white"
+              className="grid h-12 w-12 place-items-center rounded-full border border-ink/20 text-ink transition-all duration-300 ease-premium hover:scale-110 hover:border-pink hover:bg-pink hover:text-white"
             >
               <ArrowRight size={18} />
             </button>
@@ -137,12 +170,22 @@ export default function Doctors() {
               data-card
               className="group w-[78%] shrink-0 snap-start sm:w-[46%] lg:w-[30%] xl:w-[23%]"
             >
-              <div className="relative aspect-[3/4] overflow-hidden rounded-sm bg-ink-soft">
-                <div className="absolute inset-0 grid place-items-center">
-                  <span className="font-display text-6xl text-paper/25">
-                    {initials(d.name)}
-                  </span>
-                </div>
+              <div className="relative aspect-[3/4] overflow-hidden rounded-sm bg-ink-soft transition-transform duration-500 ease-premium group-hover:-translate-y-1.5">
+                {d.image ? (
+                  <Image
+                    src={d.image}
+                    alt={d.stockPlaceholder ? "" : d.name}
+                    fill
+                    sizes="(max-width:640px) 78vw, (max-width:1024px) 46vw, 23vw"
+                    className="object-cover transition-transform duration-700 ease-premium group-hover:scale-110"
+                  />
+                ) : (
+                  <div className="absolute inset-0 grid place-items-center transition-transform duration-700 ease-premium group-hover:scale-110">
+                    <span className="font-display text-6xl text-paper/25 transition-colors duration-500 group-hover:text-pink/40">
+                      {initials(d.name)}
+                    </span>
+                  </div>
+                )}
                 {/* hover overlay */}
                 <div className="absolute inset-0 flex items-end bg-gradient-to-t from-ink/85 via-ink/10 to-transparent p-5 opacity-0 transition-opacity duration-500 ease-premium group-hover:opacity-100">
                   <p className="text-sm text-paper/85">
@@ -150,9 +193,10 @@ export default function Doctors() {
                     {d.affiliation ? ` · ${d.affiliation}` : ""}
                   </p>
                 </div>
+                <div className="absolute inset-x-0 bottom-0 h-0.5 origin-left scale-x-0 bg-pink transition-transform duration-500 ease-premium group-hover:scale-x-100" />
               </div>
               <div className="mt-4">
-                <p className="font-display text-lg uppercase tracking-tight text-ink">
+                <p className="font-display text-lg uppercase tracking-tight text-ink transition-colors duration-300 group-hover:text-pink">
                   {d.name}
                 </p>
                 <p className="mt-1 font-mono text-[0.7rem] uppercase tracking-widest text-ash">

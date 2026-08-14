@@ -13,16 +13,16 @@ import CustomCursor from "@/components/ui/CustomCursor";
  * is added per-section where needed; the footer already clears it.
  */
 export default function SiteChrome({ children }: { children: ReactNode }) {
-  return (
-    <>
-      <Loader />
-      <CustomCursor />
-      <Header />
-      <main id="main">{children}</main>
-      <Footer />
-      <FloatingActionBar />
-      {/* spacer so the fixed mobile bar never covers footer content */}
-      <div className="h-16 lg:hidden" aria-hidden />
-    </>
-  );
+    return (
+        <>
+            <Loader />
+            <CustomCursor />
+            <Header />
+            <main id="main">{children}</main>
+            <Footer />
+            <FloatingActionBar />
+            {/* spacer so the fixed mobile bar never covers footer content */}
+            <div className="h-16 lg:hidden" aria-hidden />
+        </>
+    );
 }
